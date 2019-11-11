@@ -22,7 +22,7 @@ describe('folders endpoint', function() {
 
   describe('GET /folders', () => {
     context('given no folders', () => {
-      it.only('responds 200 and an empty array', () => {
+      it('responds 200 and an empty array', () => {
         return supertest(app)
           .get('/folders')
           .expect(200, []);
@@ -43,42 +43,67 @@ describe('folders endpoint', function() {
     context('given an XSS attack folder', () => {
       const maliciousFolder = {
         title: 'Naughty naughty very naughty <script>alert("xss");</script>',
-        id: 1
+        id: 1,
+        note_count: 1
       };
       const expectedFolder = {
         title: 'Naughty naughty very naughty &lt;script&gt;alert("xss");&lt;/script&gt;',
-        id: 1
+        id: 1,
+        note_count: 1
       };
       beforeEach('insert folders', () => {
         return db.into('noteful_folders')
           .insert(maliciousFolder);
       });
-
-      return supertest(app)
-        .get('/folders')
-        .expect(200, expectedFolder);
+      it('malicious folder inserted, return sanitized folder', () => {
+        return supertest(app)
+          .get('/folders')
+          .expect(200, [expectedFolder]);
+      });
     });
   });
   describe('GET /folders/:folderId', () => {
     context('given folderId does not exist', () => {
       it('responds 404', () => {
         return supertest(app)
-          .get('folders/999')
+          .get('/folders/999')
           .expect(404);
       });
     });
     context('given folderId exists', () => {
-      this.beforeEach('insert test bookmarks', () => {
-        return db.into('noteful_folders').insert(testFolders);
-      });
       const testFolders = makeFoldersArray();
       const expectedId = 2;
       const expectedFolder = testFolders[expectedId - 1];
+      beforeEach('insert test folders', () => {
+        return db.into('noteful_folders').insert(testFolders);
+      });
       it('given folderId exists, respond with 200 and correct folder', () => {
         return supertest(app)
           .get(`/folders/${expectedId}`)
           .expect(200, expectedFolder);
       });
+    });
+    context('given malicious attack folder, sanitize and return', () => {
+      const maliciousFolder = {
+        title: 'Naughty naughty very naughty <script>alert("xss");</script>',
+        id: 1,
+        note_count: 1
+      };
+      const expectedFolder = {
+        title: 'Naughty naughty very naughty &lt;script&gt;alert("xss");&lt;/script&gt;',
+        id: 1,
+        note_count: 1,
+      };
+      beforeEach('insert folders', () => {
+        return db.into('noteful_folders')
+          .insert(maliciousFolder);
+      });
+      it('malicious folder inserted, return sanitized folder', () => {
+        return supertest(app)
+          .get('/folders/1')
+          .expect(200, expectedFolder);
+      });
+
     });
   });
 });
