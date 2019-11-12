@@ -11,7 +11,8 @@ const serializeNote = note => ({
   id: Number(xss(note.id)),
   title: xss(note.title),
   content: xss(note.content),
-  folder: note.folder
+  folder: note.folder,
+  modified: new Date()
 });
 
 NotesRouter.route('/notes')
@@ -24,8 +25,8 @@ NotesRouter.route('/notes')
   })
   .post(jsonParser, (req, res, next) => {
     const knexInstance = req.app.get('db');
-    const {title, content, folder} = req.body;
-    const newNote = {title, content, folder};
+    const {title, content, folder, modified, date_created} = req.body;
+    const newNote = {title, content, folder, modified, date_created};
     for (const [key, value] of Object.entries(newNote)) {
       if (value === null) {
         return res.status(400).json({

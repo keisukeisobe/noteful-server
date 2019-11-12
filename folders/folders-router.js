@@ -10,7 +10,6 @@ const xss = require('xss');
 const serializeFolder = folder => ({
   id: Number(xss(folder.id)),
   title: xss(folder.title),
-  note_count: folder.note_count
 });
 
 FoldersRouter.route('/folders')
@@ -24,8 +23,8 @@ FoldersRouter.route('/folders')
   })
   .post(jsonParser, (req, res, next) => {
     const knexInstance = req.app.get('db');
-    const {title, noteCount} = req.body;
-    const newFolder = {title, noteCount};
+    const {title} = req.body;
+    const newFolder = {title};
     for (const [key, value] of Object.entries(newFolder)) {
       if (value === null) {
         return res.status(400).json({
@@ -72,13 +71,13 @@ FoldersRouter.route('/folders/:folderId')
   })
   .patch(jsonParser, ( req, res, next ) => {
     const knexInstance = req.app.get('db');
-    const {title, noteCount} = req.body;
-    const newFolderData = {title, noteCount};
+    const {title} = req.body;
+    const newFolderData = {title};
     const folderId = req.params.folderId;
     const numberOfValues = Object.values(newFolderData).filter(Boolean).length;
     if (numberOfValues === 0) {
       return res.status(400).json({
-        error: {message: 'Request body must contain title or note_count.'}
+        error: {message: 'Request body must contain title.'}
       });
     }
     newFolderData.title = title(xss);

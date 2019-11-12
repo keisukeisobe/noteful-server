@@ -44,12 +44,10 @@ describe('folders endpoint', function() {
       const maliciousFolder = {
         title: 'Naughty naughty very naughty <script>alert("xss");</script>',
         id: 1,
-        note_count: 1
       };
       const expectedFolder = {
         title: 'Naughty naughty very naughty &lt;script&gt;alert("xss");&lt;/script&gt;',
         id: 1,
-        note_count: 1
       };
       beforeEach('insert folders', () => {
         return db.into('noteful_folders')
@@ -87,12 +85,10 @@ describe('folders endpoint', function() {
       const maliciousFolder = {
         title: 'Naughty naughty very naughty <script>alert("xss");</script>',
         id: 1,
-        note_count: 1
       };
       const expectedFolder = {
         title: 'Naughty naughty very naughty &lt;script&gt;alert("xss");&lt;/script&gt;',
         id: 1,
-        note_count: 1,
       };
       beforeEach('insert folders', () => {
         return db.into('noteful_folders')
