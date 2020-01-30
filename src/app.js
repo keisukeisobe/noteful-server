@@ -3,8 +3,8 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
-const FoldersRouter = require('../folders/folders-router');
-const NotesRouter = require('../notes/notes-router');
+const FoldersRouter = require('./folders/folders-router');
+const NotesRouter = require('./notes/notes-router');
 const app = express();
 
 const morganOption = (process.env.NODE_ENV === 'production')
